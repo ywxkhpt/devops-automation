@@ -18,11 +18,23 @@ pipeline {
                 }
             }
         }
-        stage('push image to local area network'){
+        stage ('mkdir tmp dir && copy image startup.sh') {
+            steps {
+                script {
+                    if (fileExists('./devops-integration/')) {
+                        echo "dir exists"
+                    }else{
+                        fileOperations([folderCreateOperation('./devops-integration/')])
+                    }
+                    fileOperations([fileCopyOperation(excludes: '', flattenFiles: false, includes: 'startup.sh,**/*.tar', renameFiles: false, sourceCaptureExpression: '', targetLocation: './devops-integration/', targetNameExpression: '')])
+                }
+            }
+        }
+        stage('push image to local area network && startup docker container'){
             steps{
                 script{
-                    sshPublisher(publishers: [sshPublisherDesc(configName: '192.168.100.184', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '''cd /root/images
-                        sh ./startup.sh''', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '**/*.tar,**/startup.sh')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                    sshPublisher(publishers: [sshPublisherDesc(configName: '192.168.100.184', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '''cd /root/images/devops-integration/
+                        sh ./startup.sh''', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: './devops-integration/*')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
                 }
             }
         }

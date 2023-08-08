@@ -24,7 +24,7 @@ if [  -n "$ARG2" ]; then
 fi
 
 #加载新的镜像
-cd /root/images
+cd /root/images/${imagename}
 pwd
 docker load --input ${imagename}.tar
 #启动容器
