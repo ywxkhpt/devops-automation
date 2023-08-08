@@ -1,19 +1,20 @@
 pipeline {
     agent any
     tools{
-        maven 'maven_3_5_0'
+        maven 'Maven-3.9.4'
     }
     stages{
         stage('Build Maven'){
             steps{
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Java-Techie-jt/devops-automation']]])
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/ywxkhpt/devops-automation']])
                 sh 'mvn clean install'
             }
         }
         stage('Build docker image'){
             steps{
                 script{
-                    sh 'docker build -t javatechie/devops-integration .'
+                    sh 'docker rmi ywxkhpt/devops-integration'
+                    sh 'docker build -t ywxkhpt/devops-integration .'
                 }
             }
         }
@@ -21,17 +22,9 @@ pipeline {
             steps{
                 script{
                    withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
-                   sh 'docker login -u javatechie -p ${dockerhubpwd}'
-
-}
-                   sh 'docker push javatechie/devops-integration'
-                }
-            }
-        }
-        stage('Deploy to k8s'){
-            steps{
-                script{
-                    kubernetesDeploy (configs: 'deploymentservice.yaml',kubeconfigId: 'k8sconfigpwd')
+                        sh 'docker login -u ywxkhpt -p ${dockerhubpwd}'
+                    }
+                   sh 'docker push ywxkhpt/devops-integration'
                 }
             }
         }
