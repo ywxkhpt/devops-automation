@@ -13,20 +13,28 @@ pipeline {
         stage('Build docker image'){
             steps{
                 script{
-                    sh 'docker rmi ywxkhpt/devops-integration'
-                    sh 'docker build -t ywxkhpt/devops-integration .'
+                    sh 'docker build -t devops-integration .'
+                    sh 'docker save -o ./devops-integration.tar devops-integration'
                 }
             }
         }
-        stage('Push image to Hub'){
+        stage('push image to local area network'){
             steps{
                 script{
-                   withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
-                        sh 'docker login -u ywxkhpt -p ${dockerhubpwd}'
-                    }
-                   sh 'docker push ywxkhpt/devops-integration'
+                    sshPublisher(publishers: [sshPublisherDesc(configName: '192.168.100.184', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '''cd /root/images
+sh ./startup.sh''', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '**/*.tar,**/startup.sh')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
                 }
             }
         }
+        // stage('Push image to Hub'){
+        //     steps{
+        //         script{
+        //           withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
+        //                 sh 'docker login -u ywxkhpt -p ${dockerhubpwd}'
+        //             }
+        //           sh 'docker push ywxkhpt/devops-integration'
+        //         }
+        //     }
+        // }
     }
 }
