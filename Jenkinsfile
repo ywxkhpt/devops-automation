@@ -22,7 +22,7 @@ pipeline {
             steps{
                 script{
                     sshPublisher(publishers: [sshPublisherDesc(configName: '192.168.100.184', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '''cd /root/images
-sh ./startup.sh''', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '**/*.tar,**/startup.sh')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                        sh ./startup.sh''', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '**/*.tar,**/startup.sh')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
                 }
             }
         }
